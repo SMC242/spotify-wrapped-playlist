@@ -1,0 +1,5 @@
+results/
+*.log
+secrets.json
+__pycache__
+my_playlist.txt
