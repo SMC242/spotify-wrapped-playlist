@@ -27,7 +27,8 @@ async def main():
         playlist_id = get_playlist_id(PLAYLIST_URL)
         tracks = await all_tracks(requester, playlist_id)
 
-        # plot_songs_per_year(tracks)
+        plot_songs_per_year(tracks)
+
         genres = await all_genres(requester, tracks)
         plot_songs_per_genre(genres)
 
