@@ -5,7 +5,7 @@ from collections import Counter
 import toolz.curried as toolz
 
 from songs import parse_tracks
-from artists import all_genres
+from genres import all_genres
 
 
 def plot_years(counter: Counter[int]) -> None:
