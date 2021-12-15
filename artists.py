@@ -14,6 +14,9 @@ def to_artists(songs: List[dict]) -> Iterator[str]:
                         key=_get_artist_id)
 
 
+songs_to_artist_ids = toolz.compose(toolz.map(_get_artist_id), to_artists)
+
+
 def batched_artist_url(batch: List[str]) -> URL:
     return spotify_url(path="artists", query={"ids": ",".join(batch)})
 
@@ -25,5 +28,6 @@ async def get_artists(requester: SpotifyRequester, ids: Iterator[str]) -> Iterat
     return toolz.mapcat(toolz.get_in(["artists"]), results)
 
 
-def songs_to_artists(requester, songs): return toolz.compose(
-    toolz.curry(get_artists(requester)), to_artists)(songs)
+async def songs_to_artists(requester, songs):
+    ids = songs_to_artist_ids(songs)
+    return await get_artists(requester, ids)
