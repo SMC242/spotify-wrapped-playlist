@@ -3,3 +3,4 @@ results/
 secrets.json
 __pycache__
 my_playlist.txt
+.mypy_cache

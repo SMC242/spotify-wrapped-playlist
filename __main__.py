@@ -1,18 +1,20 @@
-import toolz
 import asyncio
+import argparse
 
-from initialise import get_requester
-from playlist import get_playlist_id, all_tracks
-from plot import plot_songs_per_year, plot_songs_per_genre
-from genres import all_genres
-
-PLAYLIST_URL = 'https://open.spotify.com/playlist/41zvVVqoHS0N7cnTqFjvcm?si=e51d58bcda1c4b79'
+from src.initialise import get_requester
+from src.playlist import get_playlist_id, all_tracks
+from src.plot import plot_songs_per_year, plot_songs_per_genre
+from src.genres import all_genres
 
 
 async def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("playlist_url", type=str)
+    url = parser.parse_args().playlist_url
+
     try:
         requester = get_requester()
-        playlist_id = get_playlist_id(PLAYLIST_URL)
+        playlist_id = get_playlist_id(url)
 
         tracks = await all_tracks(requester, playlist_id)
         genres = await all_genres(requester, tracks)
