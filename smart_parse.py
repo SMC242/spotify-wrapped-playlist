@@ -1,24 +1,6 @@
-from typing import Any, Iterator, Optional, List
-from collections.abc import Sequence
-from bisect import bisect_left
+from typing import Iterator, Optional, List
 import toolz.curried
 from dataclasses import dataclass, field
-
-
-def binary_search(arr: Sequence, x: Any) -> int:
-    i = bisect_left(arr, x)
-    if i != len(arr) and arr[i] == x:
-        return i
-    else:
-        return -1
-
-
-def get_searcher(arr: Sequence):
-    """Sort a sequence and get a function that will search through it."""
-    @toolz.curry
-    def searcher(xs: Sequence, x: Any) -> int:
-        return binary_search(xs, x)
-    return searcher(sorted(arr))
 
 
 @dataclass
@@ -89,5 +71,4 @@ def parse_genre(genre: str) -> ParsedGenre:
 
 def smart_parse(genres: Iterator[str]) -> Iterator[ParsedGenre]:
     """Convert a list of genres into their components."""
-    searcher = get_searcher(list(toolz.unique(genres)))
     return map(parse_genre, genres)
