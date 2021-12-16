@@ -1,4 +1,4 @@
-This script will generate some statistics about a particular playlist :)
+This script will generate some statistics about a particular Spotify playlist :)
 
 # Plans
 I intend to make this the backend for a website. It will return various graphs and tables for a given playlist.
