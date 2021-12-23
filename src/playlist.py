@@ -54,14 +54,31 @@ def all_tracks_url(playlist_id: str) -> URL:
         "next",
         "total",
         "limit",
-        "href"
+        "href",
+        "duration_ms",
     ]
     path = f"playlists/{playlist_id}/tracks"
     params = {"fields": ",".join(fields), }
     return spotify_url(path=path, query=params)
 
 
-async def all_tracks(requester: SpotifyRequester, playlist_id: str) -> List[dict]:
+async def all_tracks(pages: List[dict]) -> List[dict]:
+    return list(toolz.mapcat(to_tracks, pages))
+
+
+async def request_playlist(requester: SpotifyRequester, playlist_id: str) -> dict:
+    """Return the information about a playlist and some information about its tracks."""
+    first_url = all_tracks_url(playlist_id)
+    res = await requester.get(first_url)
+    next_ = infer_page_urls(res)
+    results = await asyncio.gather(*map(requester.get, next_))
+    all_results = [res, *results]
+    total = {**res, "tracks": all_tracks(all_results)}
+    del total["items"]
+    return total
+
+
+async def request_tracks(requester: SpotifyRequester, playlist_id: str) -> List[dict]:
     first_url = all_tracks_url(playlist_id)
     res = await requester.get(first_url)
     next_ = infer_page_urls(res)
