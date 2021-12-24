@@ -14,7 +14,7 @@ class TestRequster(unittest.TestCase):
 
     def test_headers(self):
         self.requester.token = "gnomes-UwU"
-        self.assertEqual({f"Authorization": "Bearer {token}"},
+        self.assertEqual({f"Authorization": "Bearer gnomes-UwU"},
                          self.requester.make_headers())
 
 
