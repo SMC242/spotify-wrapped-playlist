@@ -56,7 +56,7 @@ def all_tracks_url(playlist_id: str) -> URL:
         "total",
         "limit",
         "href",
-        "duration_ms",
+        "duration_ms"
     ]
     path = f"playlists/{playlist_id}/tracks"
     params = {"fields": ",".join(fields), }
