@@ -48,7 +48,7 @@ class SpotifyRequester:
         return {"Authorization": f"Bearer {self.token}"}
 
     async def get(self, url: Union[str, URL], params: dict = None) -> dict:
-        logger.info(f"Requesting {url} with {params=}")
+        logger.debug(f"Requesting {url} with {params=}")
         async with self.session.get(url, headers=self.auth_headers, params=params) as res:
             if not res.ok:
                 logger.error(
