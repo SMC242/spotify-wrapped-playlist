@@ -12,7 +12,7 @@ PAGE_LIMIT: int = 100
 
 
 def get_playlist_id(playlist_url: str) -> Optional[str]:
-    MATCH_PLAYLIST_ID = compile(r'(?<=\/playlist\/)[^?]+')
+    MATCH_PLAYLIST_ID = compile(r'(?<=\/playlist\/)[^?]{22}(?=\?.+|$)')
 
     match = MATCH_PLAYLIST_ID.search(playlist_url)
     return match.group(0) if match else None
