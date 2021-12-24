@@ -79,9 +79,5 @@ async def request_playlist(requester: SpotifyRequester, playlist_id: str) -> dic
 
 
 async def request_tracks(requester: SpotifyRequester, playlist_id: str) -> List[dict]:
-    first_url = all_tracks_url(playlist_id)
-    res = await requester.get(first_url)
-    next_ = infer_page_urls(res)
-    results = await asyncio.gather(*map(requester.get, next_))
-    all_results = [res, *results]
-    return list(toolz.mapcat(to_tracks, all_results))
+    playlist = await request_playlist(requester, playlist_id)
+    return playlist["tracks"]
