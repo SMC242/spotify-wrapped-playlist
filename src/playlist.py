@@ -62,8 +62,8 @@ def all_tracks_url(playlist_id: str) -> URL:
     return spotify_url(path=path, query=params)
 
 
-async def all_tracks(pages: List[dict]) -> List[dict]:
-    return list(toolz.mapcat(to_tracks, pages))
+def all_tracks(pages: List[dict]) -> Iterator[dict]:
+    return toolz.mapcat(to_tracks, pages)
 
 
 async def request_playlist(requester: SpotifyRequester, playlist_id: str) -> dict:
@@ -73,7 +73,7 @@ async def request_playlist(requester: SpotifyRequester, playlist_id: str) -> dic
     next_ = infer_page_urls(res)
     results = await asyncio.gather(*map(requester.get, next_))
     all_results = [res, *results]
-    total = {**res, "tracks": all_tracks(all_results)}
+    total = {**res, "tracks": list(all_tracks(all_results))}
     del total["items"]
     return total
 
