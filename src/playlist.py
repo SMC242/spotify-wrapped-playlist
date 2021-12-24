@@ -6,6 +6,7 @@ import toolz.curried
 from yarl import URL
 
 from src.requester import SpotifyRequester, spotify_url
+from src.logger import logger
 
 # The number of songs to request per page of a playlist
 PAGE_LIMIT: int = 100
@@ -68,6 +69,7 @@ def all_tracks(pages: List[dict]) -> Iterator[dict]:
 
 async def request_playlist(requester: SpotifyRequester, playlist_id: str) -> dict:
     """Return the information about a playlist and some information about its tracks."""
+    logger.info(f"Requesting playlist {playlist_id}...")
     first_url = all_tracks_url(playlist_id)
     res = await requester.get(first_url)
     next_ = infer_page_urls(res)
