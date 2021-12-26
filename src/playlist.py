@@ -11,6 +11,15 @@ from src.fields import Fields
 
 # The number of songs to request per page of a playlist
 PAGE_LIMIT: int = 100
+DEFAULT_FIELDS = Fields(
+    "next",
+    "total",
+    "limit",
+    "href",
+    "duration_ms",
+    Fields("added_at", Fields("artists", "name",
+                              title="track"), title="items")
+)
 
 
 def get_playlist_id(playlist_url: str) -> Optional[str]:
@@ -50,18 +59,13 @@ def infer_page_urls(first_page: dict) -> Iterator[str]:
     return map(set_offset(first_page["href"]), offsets)
 
 
-def all_tracks_url(playlist_id: str) -> URL:
-    fields = Fields(
-        "next",
-        "total",
-        "limit",
-        "href",
-        "duration_ms",
-        Fields("added_at", Fields("artists", "name",
-                                  title="tracks"), title="items")
-    )
+def playlist_query(playlist_id: str, fields: Fields = None) -> URL:
     path = f"playlists/{playlist_id}/tracks"
-    params = {"fields": fields.construct(), }
+    params = {
+        "fields": (fields or DEFAULT_FIELDS).construct(),
+        "offset": 0,
+        "limit": PAGE_LIMIT,
+    }
     return spotify_url(path=path, query=params)
 
 
@@ -72,7 +76,7 @@ def all_tracks(pages: List[dict]) -> Iterator[dict]:
 async def request_playlist(requester: SpotifyRequester, playlist_id: str) -> dict:
     """Return the information about a playlist and some information about its tracks."""
     logger.info(f"Requesting playlist {playlist_id}...")
-    first_url = all_tracks_url(playlist_id)
+    first_url = playlist_query(playlist_id)
     res = await requester.get(first_url)
     next_ = list(infer_page_urls(res))
     logger.info(f"Inferred URLs {next_} from {first_url}")
