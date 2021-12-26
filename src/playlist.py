@@ -2,7 +2,7 @@ from typing import Optional, List, Iterator
 from re import compile
 from math import ceil
 import asyncio
-import toolz.curried
+import toolz.curried as toolz
 from yarl import URL
 
 from src.requester import SpotifyRequester, spotify_url
@@ -32,6 +32,10 @@ def get_playlist_id(playlist_url: str) -> Optional[str]:
 def to_tracks(playlist_response: dict) -> list:
     """Get the track list from a playlist query"""
     return playlist_response["items"]
+
+
+def to_names(tracks: Iterator[dict]) -> Iterator[str]:
+    return map(toolz.get_in(["track", "name"]), tracks)
 
 
 @toolz.curry

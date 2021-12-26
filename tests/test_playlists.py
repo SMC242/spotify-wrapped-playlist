@@ -62,10 +62,13 @@ class TestPlaylist(unittest.TestCase):
             URL("https://api.spotify.com/v1/playlists/1478925d/tracks?fields=items(track(artists,name))&offset=0&limit=100"), func(test_id, fields))
 
     def test_to_tracks(self):
-        ...
+        self.assertEqual(self.playlist["tracks"],
+                         playlist.to_tracks(self.playlist))
 
-    def test_all_tracks(self):
-        ...
+    def test_to_names(self):
+        tracks = playlist.to_tracks(self.playlist)
+        expected = ['Blumenkranz', 'Before my body is dry', 'Kiる厭KiLL']
+        self.assertEqual(expected, list(playlist.to_names(tracks)))
 
 
 if __name__ == "__main__":
