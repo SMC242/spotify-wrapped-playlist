@@ -1,10 +1,17 @@
 import unittest
 from yarl import URL
+from json import load
 
 import src.playlist as playlist
+from src.fields import Fields
 
 
 class TestPlaylist(unittest.TestCase):
+    def setUp(self):
+        # Load an example playlist to parse
+        with open("tests/data/playlist.json") as f:
+            self.playlist = load(f)
+
     def test_id(self):
         func = playlist.get_playlist_id
         self.assertEqual("58yWhVtYSYmj1bDpfNOUDq", func(
