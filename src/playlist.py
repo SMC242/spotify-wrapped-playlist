@@ -51,11 +51,11 @@ def infer_page_urls(first_page: dict) -> Iterator[str]:
     Each page has the URL to the next page. 
     """
     total = first_page["total"]
-    # The limit produced seemed to be higher than
+    # The offset is in songs, not pages so I have to multiply
     items_per_page = first_page["limit"]
     n = ceil(total / items_per_page)
-    # The offset is in songs, not pages
-    offsets = map(lambda x: x * items_per_page, range(n))
+    # Starting from 1 because the first page was already requested
+    offsets = map(lambda x: x * items_per_page, range(1, n))
     return map(set_offset(first_page["href"]), offsets)
 
 
