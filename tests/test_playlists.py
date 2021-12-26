@@ -41,22 +41,31 @@ class TestPlaylist(unittest.TestCase):
         page = {
             "total": 50,
             "limit": 10,
-            "href": "https://api.spotify.com/v1/me/shows?offset=1&limit=10"
+            "href": "https://api.spotify.com/v1/me/shows?offset=0&limit=10"
         }
-        self.assertEqual([URL("https://api.spotify.com/v1/me/shows?offset=0&limit=10"), URL("https://api.spotify.com/v1/me/shows?offset=10&limit=10"),
+        self.assertEqual([URL("https://api.spotify.com/v1/me/shows?offset=10&limit=10"),
                           URL("https://api.spotify.com/v1/me/shows?offset=20&limit=10"), URL("https://api.spotify.com/v1/me/shows?offset=30&limit=10"), URL("https://api.spotify.com/v1/me/shows?offset=40&limit=10")], list(func(page)), "Failed to infer pages")
         page2 = {
             "total": 40,
             "limit": 15,
             "href": "https://api.spotify.com/v1/me/shows?offset=1&limit=15"
         }
-        self.assertEqual([URL("https://api.spotify.com/v1/me/shows?offset=0&limit=15"),
-                          URL("https://api.spotify.com/v1/me/shows?offset=15&limit=15"), URL("https://api.spotify.com/v1/me/shows?offset=30&limit=15")], list(func(page2)), "Failed to handle uneven paging")
+        self.assertEqual([
+            URL("https://api.spotify.com/v1/me/shows?offset=15&limit=15"), URL("https://api.spotify.com/v1/me/shows?offset=30&limit=15")], list(func(page2)), "Failed to handle uneven paging")
 
-    def test_all_tracks_url(self):
-        func = playlist.all_tracks_url
+    def test_playlist_query(self):
+        test_id = "1478925d"
+        func = playlist.playlist_query
+        fields = Fields(
+            Fields(Fields("artists", "name", title="track"), title="items"))
         self.assertEqual(
-            URL("https://api.spotify.com/v1/playlists/1478925d/tracks?fields=items(added_at,track(artists)),next,total,limit,href,duration_ms"), func("1478925d"))
+            URL("https://api.spotify.com/v1/playlists/1478925d/tracks?fields=items(track(artists,name))&offset=0&limit=100"), func(test_id, fields))
+
+    def test_to_tracks(self):
+        ...
+
+    def test_all_tracks(self):
+        ...
 
 
 if __name__ == "__main__":
