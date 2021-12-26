@@ -74,7 +74,8 @@ async def request_playlist(requester: SpotifyRequester, playlist_id: str) -> dic
     logger.info(f"Requesting playlist {playlist_id}...")
     first_url = all_tracks_url(playlist_id)
     res = await requester.get(first_url)
-    next_ = infer_page_urls(res)
+    next_ = list(infer_page_urls(res))
+    logger.info(f"Inferred URLs {next_} from {first_url}")
     results = await asyncio.gather(*map(requester.get, next_))
     all_results = [res, *results]
     total = {**res, "tracks": list(all_tracks(all_results))}
