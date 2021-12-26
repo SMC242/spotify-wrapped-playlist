@@ -7,6 +7,7 @@ from yarl import URL
 
 from src.requester import SpotifyRequester, spotify_url
 from src.logger import logger
+from src.fields import Fields
 
 # The number of songs to request per page of a playlist
 PAGE_LIMIT: int = 100
@@ -50,16 +51,17 @@ def infer_page_urls(first_page: dict) -> Iterator[str]:
 
 
 def all_tracks_url(playlist_id: str) -> URL:
-    fields = [
-        "items(added_at,track(artists))",
+    fields = Fields(
         "next",
         "total",
         "limit",
         "href",
         "duration_ms",
-    ]
+        Fields("added_at", Fields("artists", "name",
+                                  title="tracks"), title="items")
+    )
     path = f"playlists/{playlist_id}/tracks"
-    params = {"fields": ",".join(fields), }
+    params = {"fields": fields.construct(), }
     return spotify_url(path=path, query=params)
 
 
