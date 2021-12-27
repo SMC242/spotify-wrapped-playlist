@@ -59,7 +59,7 @@ def parse_special(expected: str, actual: str) -> List[str]:
 def parse_genre(genre: str) -> ParsedGenre:
     """Convert a genre into its components."""
     for special in special_genres:
-        if special.lower() in genre:
+        if special in genre.lower():
             split = parse_special(special, genre)
             break
     else:
