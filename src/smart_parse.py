@@ -2,6 +2,10 @@ from typing import Iterator, Optional, List
 import toolz.curried
 from dataclasses import dataclass, field
 
+# Genre names that need to be treated differently when parsing
+with open("static/special_genres.txt") as f:
+    special_genres = [l.strip("\n") for l in f]
+
 
 @dataclass
 class ParsedGenre:
@@ -31,12 +35,6 @@ def make_parsed_genre(split_genre: List[str]) -> ParsedGenre:
     return ParsedGenre(full_name, genre, prefixes)
 
 
-# Genre names that need to be treated differently when parsing
-SPECIAL_GENRES = [
-    "hip hop"
-]
-
-
 def words(x: str) -> List[str]: return x.split(" ")
 
 
@@ -59,7 +57,7 @@ def parse_special(expected: str, actual: str) -> List[str]:
 
 def parse_genre(genre: str) -> ParsedGenre:
     """Convert a genre into its components."""
-    for special in SPECIAL_GENRES:
+    for special in special_genres:
         if special in genre:
             split = parse_special(special, genre)
             break
