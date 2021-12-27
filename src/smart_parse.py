@@ -21,7 +21,7 @@ class ParsedGenre:
     """
     full_name: str
     genre: str
-    prefixes: Optional[List[str]] = None
+    prefixes: List[str] = field(default_factory=list)
 
 
 def make_parsed_genre(split_genre: List[str]) -> ParsedGenre:
