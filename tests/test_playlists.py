@@ -2,7 +2,7 @@ import unittest
 from yarl import URL
 from json import load
 
-import src.playlist as playlist
+import src.playlists as playlist
 from src.fields import Fields
 
 
