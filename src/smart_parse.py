@@ -28,7 +28,7 @@ def make_parsed_genre(split_genre: List[str]) -> ParsedGenre:
     titlecased = list(map(str.title, split_genre))
     # No prefix
     if len(titlecased) == 1:
-        return ParsedGenre(split_genre[0], split_genre[0])
+        return ParsedGenre(titlecased[0], titlecased[0])
 
     # 1 or more prefixes
     full_name = " ".join(titlecased)
