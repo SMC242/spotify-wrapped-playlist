@@ -39,7 +39,7 @@ def make_parsed_genre(split_genre: List[str]) -> ParsedGenre:
 def words(x: str) -> List[str]: return x.split(" ")
 
 
-def parse(genre: str) -> List[str]:
+def parse_normal(genre: str) -> List[str]:
     split = words(genre)
     if len(split) > 1:
         # Assume the last word is the genre name
@@ -59,11 +59,11 @@ def parse_special(expected: str, actual: str) -> List[str]:
 def parse_genre(genre: str) -> ParsedGenre:
     """Convert a genre into its components."""
     for special in special_genres:
-        if special in genre:
+        if special.lower() in genre:
             split = parse_special(special, genre)
             break
     else:
-        split = parse(genre)
+        split = parse_normal(genre)
 
     return make_parsed_genre(split)
 
