@@ -1,7 +1,7 @@
 import unittest
 from toolz import compose
 
-import src.smart_parse as sp
+import src.parsing.smart_parse as sp
 
 parse = compose(list, sp.smart_parse)
 

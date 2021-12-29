@@ -4,8 +4,8 @@ from typing import List, Tuple, Any, Counter as CounterT
 from collections import Counter
 import toolz.curried as toolz
 
-from src.songs import parse_tracks
-from src.genres import all_genres
+from src.parsing.songs import parse_tracks
+from src.IO.genre_io import all_genres
 
 
 def plot_years(counter: CounterT[int]) -> None:

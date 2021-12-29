@@ -3,7 +3,7 @@ from json import load
 from datetime import date, datetime
 from toolz import compose
 
-import src.songs as songs
+import src.parsing.songs as songs
 
 
 class TestSongs(unittest.TestCase):

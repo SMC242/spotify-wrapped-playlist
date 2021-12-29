@@ -4,7 +4,7 @@ from typing import Tuple
 from os import PathLike
 from pathlib import Path
 
-from src.requester import SpotifyRequester
+from src.IO.requester import SpotifyRequester
 
 
 def load_secrets(path: PathLike) -> Tuple[str, str]:

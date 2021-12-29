@@ -1,7 +1,7 @@
 import unittest
 from json import load
 
-import src.genres as genres
+import src.parsing.genres as genres
 
 
 class TestGenre(unittest.TestCase):

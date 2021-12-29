@@ -2,7 +2,8 @@ import unittest
 from json import load
 from yarl import URL
 
-import src.artists as artists
+import src.parsing.artists as artists
+import src.urls.artist_urls as au
 
 
 class TestArtists(unittest.TestCase):
@@ -25,17 +26,19 @@ class TestArtists(unittest.TestCase):
 
     def test_batch_ids(self):
         input_ = range(51)
-        self.assertEqual(2, len(list(artists._batch_ids(input_))))
+        self.assertEqual(2, len(list(artists.batch_ids(input_))))
 
     def test_to_artists(self):
         expected = self.first_track["track"]["artists"]
         self.assertEqual(expected, list(artists.to_artists(self.tracks)))
 
+
+class TestArtistURLs(unittest.TestCase):
     def test_batched_artist_url(self):
         input_ = ["coolperson42xcv", "gnomearmyg1"]
         expected = URL(
             "https://api.spotify.com/v1/artists?ids=coolperson42xcv,gnomearmyg1")
-        self.assertEqual(expected, artists.batched_artist_url(input_))
+        self.assertEqual(expected, au.batched_artist_url(input_))
 
 
 if __name__ == '__main__':
