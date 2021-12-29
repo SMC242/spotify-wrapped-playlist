@@ -1,6 +1,6 @@
 import unittest
 from json import load
-from yarl impor URL
+from yarl import URL
 
 import src.artists as artists
 
