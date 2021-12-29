@@ -1,23 +1,16 @@
-from typing import Iterator, List
-from toolz import compose
-from datetime import date
-
-DictIterator = Iterator[dict]
+import toolz.curried as toolz
+from datetime import datetime, date
 
 
-def to_added_at(tracks: List[dict]) -> Iterator[str]:
-    """Flatten a list of tracks to their added_at attribute"""
-    return map(lambda t: t["added_at"], tracks)
+def drop_last(seq): return seq[:-1]
 
 
-def to_date(datetime: str) -> str: return datetime.split("T")[0]
-def parse_dates(xs: Iterator[str]): return map(to_date, xs)
+to_added_at = toolz.get_in(["added_at"])
+remove_z = drop_last
+parse_datetime = datetime.fromisoformat
+to_date = datetime.date
+def to_year(d: datetime): return d.year
 
 
-def to_dates(xs: Iterator[str]): return map(date.fromisoformat, xs)
-
-
-def to_years(xs: Iterator[date]): return map(lambda d: d.year, xs)
-
-
-parse_tracks = compose(to_years, to_dates, parse_dates, to_added_at)
+parse = toolz.compose(to_year, to_date, parse_datetime, remove_z, to_added_at)
+parse_tracks = toolz.map(parse)

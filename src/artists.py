@@ -22,9 +22,12 @@ def batched_artist_url(batch: List[str]) -> URL:
     return spotify_url(path="artists", query={"ids": ",".join(batch)})
 
 
+_batch_ids = toolz.partition_all(50)
+
+
 async def get_artists(requester: SpotifyRequester, ids: Iterator[str]) -> Iterator[dict]:
     logger.info(f"Requesting artists...")
-    batched = toolz.partition_all(50, ids)
+    batched = _batch_ids(ids)
     urls = map(batched_artist_url, batched)
     results = await asyncio.gather(*map(requester.get, urls))
     return toolz.mapcat(toolz.get_in(["artists"]), results)
