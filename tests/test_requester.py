@@ -2,8 +2,8 @@ import unittest
 import aiohttp
 from pathlib import Path
 
-from src.requester import SpotifyRequester
-from src.initialise import load_secrets
+from src.IO.requester import SpotifyRequester
+from src.IO.initialise import load_secrets
 
 
 class TestRequster(unittest.TestCase):

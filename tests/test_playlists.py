@@ -2,8 +2,9 @@ import unittest
 from yarl import URL
 from json import load
 
-import src.playlists as playlist
-from src.fields import Fields
+import src.parsing.playlists as playlists
+import src.urls.playlist_urls as pu
+from src.formatting.fields import Fields
 
 
 class TestPlaylist(unittest.TestCase):
@@ -13,7 +14,7 @@ class TestPlaylist(unittest.TestCase):
             self.playlist = load(f)
 
     def test_id(self):
-        func = playlist.get_playlist_id
+        func = playlists.get_playlist_id
         self.assertEqual("58yWhVtYSYmj1bDpfNOUDq", func(
             "https://open.spotify.com/playlist/58yWhVtYSYmj1bDpfNOUDq"), "Failed normal case")
         self.assertEqual("41zvVVqoHS0N7cnTqFjvcm", func(
@@ -26,18 +27,29 @@ class TestPlaylist(unittest.TestCase):
         self.assertEqual(None, func(
             "https://open.spotify.com/playlist/41zvVVqoHS0N7cnTqFjvcmjajjfjfajajffa"), "Failed too long case")
 
+    def test_to_tracks(self):
+        self.assertEqual(self.playlist["tracks"],
+                         playlists.to_tracks(self.playlist))
+
+    def test_to_names(self):
+        tracks = playlists.to_tracks(self.playlist)
+        expected = ['Blumenkranz', 'Before my body is dry', 'Kiる厭KiLL']
+        self.assertEqual(expected, list(playlists.to_names(tracks)))
+
+
+class TestPlaylistURLs(unittest.TestCase):
     def test_offset(self):
-        func = playlist.set_offset(
+        func = pu.set_offset(
             "https://api.spotify.com/v1/me/shows?offset=1&limit=1")
         self.assertEqual(URL("https://api.spotify.com/v1/me/shows?offset=2&limit=1"), func(
             2), "Failed to increment offset")
-        func2 = playlist.set_offset(
+        func2 = pu.set_offset(
             "https://api.spotify.com/v1/me/shows?limit=1")
         self.assertIn("offset=3", str(func2(
             3)), "Failed to set offset when not given")
 
     def test_infer(self):
-        func = playlist.infer_page_urls
+        func = pu.infer_page_urls
         page = {
             "total": 50,
             "limit": 10,
@@ -55,20 +67,11 @@ class TestPlaylist(unittest.TestCase):
 
     def test_playlist_query(self):
         test_id = "1478925d"
-        func = playlist.playlist_query
+        func = pu.playlist_query
         fields = Fields(
             Fields(Fields("artists", "name", title="track"), title="items"))
         self.assertEqual(
             URL("https://api.spotify.com/v1/playlists/1478925d/tracks?fields=items(track(artists,name))&offset=0&limit=100"), func(test_id, fields))
-
-    def test_to_tracks(self):
-        self.assertEqual(self.playlist["tracks"],
-                         playlist.to_tracks(self.playlist))
-
-    def test_to_names(self):
-        tracks = playlist.to_tracks(self.playlist)
-        expected = ['Blumenkranz', 'Before my body is dry', 'Kiる厭KiLL']
-        self.assertEqual(expected, list(playlist.to_names(tracks)))
 
 
 if __name__ == "__main__":

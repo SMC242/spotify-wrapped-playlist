@@ -1,10 +1,10 @@
 import asyncio
 import argparse
 
-from src.initialise import get_requester
-from src.playlists import get_playlist_id, request_tracks
-from src.plot import plot_songs_per_year, plot_songs_per_genre
-from src.genres import all_genres
+from src import Playlists
+from src.formatting.plot import plot_songs_per_genre, plot_songs_per_year
+from src import Genres
+from src import Requester
 
 
 def get_url() -> str:
@@ -16,14 +16,14 @@ def get_url() -> str:
 
 
 async def main(url: str):
-    requester = get_requester()
+    requester = Requester.get_requester()
     try:
-        playlist_id = get_playlist_id(url)
+        playlist_id = Playlists.get_playlist_id(url)
         if not playlist_id:
             raise ValueError("Invalid playlist URL")
 
-        tracks = await request_tracks(requester, playlist_id)
-        genres = await all_genres(requester, tracks)
+        tracks = await Playlists.request_tracks(requester, playlist_id)
+        genres = await Genres.all_genres(requester, tracks)
 
         plot_songs_per_year(tracks)
         plot_songs_per_genre(genres)

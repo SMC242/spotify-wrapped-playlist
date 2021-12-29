@@ -1,6 +1,6 @@
 import unittest
 
-from src.fields import Fields
+from src.formatting.fields import Fields
 
 
 class TestFields(unittest.TestCase):
