@@ -2,7 +2,7 @@ import logging
 import sys
 from pathlib import Path
 
-logger = logging.getLogger()
+logger = logging.getLogger("spotify-wrapped-playlist")
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
 

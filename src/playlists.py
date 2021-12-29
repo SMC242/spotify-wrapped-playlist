@@ -2,14 +2,24 @@ from typing import Optional, List, Iterator
 from re import compile
 from math import ceil
 import asyncio
-import toolz.curried
+import toolz.curried as toolz
 from yarl import URL
 
 from src.requester import SpotifyRequester, spotify_url
 from src.logger import logger
+from src.fields import Fields
 
 # The number of songs to request per page of a playlist
 PAGE_LIMIT: int = 100
+DEFAULT_FIELDS = Fields(
+    "next",
+    "total",
+    "limit",
+    "href",
+    "duration_ms",
+    Fields("added_at", Fields("artists", "name",
+                              title="track"), title="items")
+)
 
 
 def get_playlist_id(playlist_url: str) -> Optional[str]:
@@ -22,6 +32,10 @@ def get_playlist_id(playlist_url: str) -> Optional[str]:
 def to_tracks(playlist_response: dict) -> list:
     """Get the track list from a playlist query"""
     return playlist_response["items"]
+
+
+def to_names(tracks: Iterator[dict]) -> Iterator[str]:
+    return map(toolz.get_in(["track", "name"]), tracks)
 
 
 @toolz.curry
@@ -41,25 +55,21 @@ def infer_page_urls(first_page: dict) -> Iterator[str]:
     Each page has the URL to the next page. 
     """
     total = first_page["total"]
-    # The limit produced seemed to be higher than
+    # The offset is in songs, not pages so I have to multiply
     items_per_page = first_page["limit"]
     n = ceil(total / items_per_page)
-    # The offset is in songs, not pages
-    offsets = map(lambda x: x * items_per_page, range(n))
+    # Starting from 1 because the first page was already requested
+    offsets = map(lambda x: x * items_per_page, range(1, n))
     return map(set_offset(first_page["href"]), offsets)
 
 
-def all_tracks_url(playlist_id: str) -> URL:
-    fields = [
-        "items(added_at,track(artists))",
-        "next",
-        "total",
-        "limit",
-        "href",
-        "duration_ms"
-    ]
+def playlist_query(playlist_id: str, fields: Fields = None) -> URL:
     path = f"playlists/{playlist_id}/tracks"
-    params = {"fields": ",".join(fields), }
+    params = {
+        "fields": (fields or DEFAULT_FIELDS).construct(),
+        "offset": 0,
+        "limit": PAGE_LIMIT,
+    }
     return spotify_url(path=path, query=params)
 
 
@@ -70,9 +80,10 @@ def all_tracks(pages: List[dict]) -> Iterator[dict]:
 async def request_playlist(requester: SpotifyRequester, playlist_id: str) -> dict:
     """Return the information about a playlist and some information about its tracks."""
     logger.info(f"Requesting playlist {playlist_id}...")
-    first_url = all_tracks_url(playlist_id)
+    first_url = playlist_query(playlist_id)
     res = await requester.get(first_url)
-    next_ = infer_page_urls(res)
+    next_ = list(infer_page_urls(res))
+    logger.info(f"Inferred URLs {next_} from {first_url}")
     results = await asyncio.gather(*map(requester.get, next_))
     all_results = [res, *results]
     total = {**res, "tracks": list(all_tracks(all_results))}
