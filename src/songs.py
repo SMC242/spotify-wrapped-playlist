@@ -1,6 +1,7 @@
 from typing import Iterator, List
+#from collections.abc import Sequence
 import toolz.curried as toolz
-from datetime import date
+from datetime import datetime, date
 
 DictIterator = Iterator[dict]
 
@@ -10,14 +11,25 @@ def to_added_at(tracks: List[dict]) -> Iterator[str]:
     return map(toolz.get_in(["added_at"]), tracks)
 
 
-def to_date(datetime: str) -> str: return datetime.split("T")[0]
-def parse_dates(xs: Iterator[str]): return map(to_date, xs)
+# I couldn't get Sequence to work with mypy and strings
+# so no type :,(
+def drop_last(seq): return seq[:-1]
 
 
-def to_dates(xs: Iterator[str]): return map(date.fromisoformat, xs)
+def remove_z(timestamps: Iterator[str]) -> Iterator[str]:
+    return map(drop_last, timestamps)
+
+
+def parse_dates(timestamps: Iterator[str]) -> Iterator[datetime]:
+    return map(datetime.fromisoformat, timestamps)
+
+
+def to_dates(xs: Iterator[datetime]) -> Iterator[date]:
+    return map(datetime.date, xs)
 
 
 def to_years(xs: Iterator[date]): return map(lambda d: d.year, xs)
 
 
-parse_tracks = toolz.compose(to_years, to_dates, parse_dates, to_added_at)
+parse_tracks = toolz.compose(
+    to_years, to_dates, parse_dates, remove_z, to_added_at)
