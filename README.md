@@ -14,6 +14,8 @@ I intend to make this the backend for a website. It will return various graphs a
 - Summary of misc details about your playlist
 - Most common albums
 - Most common artists
+- Most commonly played songs and artists in your playlist
+- Smarter genre breakdown (ignore prefixes)
 
 # Installation
 
