@@ -7,3 +7,4 @@ my_playlist.txt
 .vscode/
 test.py
 test.ipynb
+.coverage
