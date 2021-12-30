@@ -45,3 +45,9 @@ class SpotifyRequester:
                     f"Request to {url} failed with code {res.status} for reason {res.reason}")
 
             return await res.json()
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, exc_traceback):
+        await self.session.close()
