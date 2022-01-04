@@ -1,20 +1,14 @@
 from typing import Iterator, Tuple
 import toolz.curried
 
-
-def song_lengths(
-        songs: Iterator[dict]) -> Iterator[float]:
-    return toolz.map(toolz.get_in(["duration_ms"], songs))
-
-
-def playlist_duration(durations: Iterator[float]) -> float:
-    return sum(durations)
+song_duration = toolz.get_in(["duration_ms"])
+song_lengths = toolz.map(song_duration)
+total_duration = toolz.compose(sum, song_lengths)
 
 
-def min_max_durations(durations: Iterator[float]) -> Tuple[float, float]:
+def min_max_durations(tracks: Iterator[dict]) -> Tuple[dict, dict]:
     """Get the shortest and longest song of a playlist."""
-    # Sorting it instead of calling min() and max()
-    sorted_durations = sorted(durations)
+    sorted_durations = sorted(tracks, key=song_duration)
     return (sorted_durations[0], sorted_durations[-1])
 
 
@@ -28,6 +22,15 @@ def summarise(playlist: dict) -> dict:
         shortest_song
         longest_song
     """
+    tracks = playlist["tracks"]
     name = playlist["name"]
-    length = len(playlist["tracks"])
-    return {}
+    length = len(tracks)
+    duration = total_duration(tracks)
+    shortest, longest = min_max_durations(tracks)
+    return {
+        "playlist_name": name,
+        "n_songs": length,
+        "play_length": duration,
+        "shortest_song": shortest,
+        "longest_song": longest
+    }
