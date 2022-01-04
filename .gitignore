@@ -5,3 +5,7 @@ __pycache__
 my_playlist.txt
 .mypy_cache
 profiling.py
+.vscode/
+test.py
+test.ipynb
+.coverage

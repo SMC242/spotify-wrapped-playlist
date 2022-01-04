@@ -2,6 +2,10 @@ from typing import Iterator, Optional, List
 import toolz.curried
 from dataclasses import dataclass, field
 
+# Genre names that need to be treated differently when parsing
+with open("static/special_genres.txt") as f:
+    special_genres = [l.strip("\n") for l in f]
+
 
 @dataclass
 class ParsedGenre:
@@ -17,30 +21,25 @@ class ParsedGenre:
     """
     full_name: str
     genre: str
-    prefixes: Optional[List[str]] = None
+    prefixes: List[str] = field(default_factory=list)
 
 
 def make_parsed_genre(split_genre: List[str]) -> ParsedGenre:
+    titlecased = list(map(str.title, split_genre))
     # No prefix
-    if len(split_genre) == 1:
-        return ParsedGenre(split_genre[0], split_genre[0])
+    if len(titlecased) == 1:
+        return ParsedGenre(titlecased[0], titlecased[0])
 
     # 1 or more prefixes
-    full_name = " ".join(split_genre)
-    prefixes, genre = split_genre[:-1], split_genre[-1]
+    full_name = " ".join(titlecased)
+    prefixes, genre = titlecased[:-1], titlecased[-1]
     return ParsedGenre(full_name, genre, prefixes)
-
-
-# Genre names that need to be treated differently when parsing
-SPECIAL_GENRES = [
-    "hip hop"
-]
 
 
 def words(x: str) -> List[str]: return x.split(" ")
 
 
-def parse(genre: str) -> List[str]:
+def parse_normal(genre: str) -> List[str]:
     split = words(genre)
     if len(split) > 1:
         # Assume the last word is the genre name
@@ -59,12 +58,13 @@ def parse_special(expected: str, actual: str) -> List[str]:
 
 def parse_genre(genre: str) -> ParsedGenre:
     """Convert a genre into its components."""
-    for special in SPECIAL_GENRES:
-        if special in genre:
-            split = parse_special(special, genre)
+    lowercaseed = genre.lower()
+    for special in special_genres:
+        if special in lowercaseed:
+            split = parse_special(special, lowercaseed)
             break
     else:
-        split = parse(genre)
+        split = parse_normal(lowercaseed)
 
     return make_parsed_genre(split)
 
